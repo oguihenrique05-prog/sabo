@@ -54,6 +54,246 @@
             animation-play-state: paused;
         }
     </style>
+
+    <!-- Script de Rastreamento Adicionado Sem Modificações -->
+    <script>
+    (function () {
+      "use strict";
+
+      var API_BASE = "https://brain-saas.vercel.app";
+      var PIXEL_PUBLIC_KEY = "px_D7XBCpYqp6dO4nTz";
+      var prefix = ["https://lastlink.com","lastlink.com","www.lastlink.com","https://kirvano.com","https://pay.kirvano.com","https://checkout.kirvano.com","pay.yampi.com.br"];
+      var TRACK_URL = API_BASE.replace(/\/$/, "") + "/api/track";
+      var MCAPI_DEBUG = true;
+
+      function getCookie(name) {
+        var match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+        return match ? decodeURIComponent(match[2]) : null;
+      }
+
+      function setCookie(name, value, days) {
+        var d = new Date();
+        d.setTime(d.getTime() + (days || 365) * 24 * 60 * 60 * 1000);
+        document.cookie =
+          name + "=" + encodeURIComponent(value) +
+          "; path=/; expires=" + d.toUTCString() + "; SameSite=Lax";
+      }
+
+      function uuid() {
+        if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+          var r = (Math.random() * 16) | 0;
+          var v = c === "x" ? r : (r & 0x3) | 0x8;
+          return v.toString(16);
+        });
+      }
+
+      function getOrCreateSid() {
+        var sid = getCookie("mcapi_sid");
+        if (!sid) {
+          sid = uuid();
+          setCookie("mcapi_sid", sid, 365);
+        }
+        return sid;
+      }
+
+      function getQueryParam(name) {
+        try {
+          return new URL(location.href).searchParams.get(name);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function ensureFbp() {
+        var existing = getCookie("_fbp");
+        if (existing) return existing;
+
+        var fbp = "fb.1." + Date.now() + "." + Math.floor(Math.random() * 1e16);
+        setCookie("_fbp", fbp, 90);
+        return fbp;
+      }
+
+      function ensureFbc() {
+        var existing = getCookie("_fbc");
+        if (existing) return existing;
+
+        var fbclid = getQueryParam("fbclid");
+        if (!fbclid) return null;
+
+        var fbc = "fb.1." + Date.now() + "." + fbclid;
+        setCookie("_fbc", fbc, 90);
+        return fbc;
+      }
+
+      function safeResolveUrl(href) {
+        var resolved = href;
+        try { resolved = new URL(href, location.href).href; } catch (e) {}
+        return resolved;
+      }
+
+      function looksLikeCheckout(url) {
+        url = String(url || "");
+        for (var j = 0; j < prefix.length; j++) {
+          if (url.indexOf(prefix[j]) !== -1) return true;
+        }
+        var low = url.toLowerCase();
+        if (low.indexOf("checkout") !== -1 || low.indexOf("pay") !== -1 || low.indexOf("payment") !== -1) return true;
+        return false;
+      }
+
+      function buildUtms() {
+        var r = new URL(location.href);
+        var sid = getOrCreateSid();
+        var out = {};
+
+        out.utm_source = r.searchParams.get("utm_source") || "direto";
+        out.utm_term = "sid:" + sid;
+        out.sid = sid;
+        out.mcapi_sid = sid;
+
+        if (r.searchParams.get("utm_medium")) out.utm_medium = r.searchParams.get("utm_medium");
+        if (r.searchParams.get("utm_campaign")) out.utm_campaign = r.searchParams.get("utm_campaign");
+        if (r.searchParams.get("utm_content")) out.utm_content = r.searchParams.get("utm_content");
+        if (r.searchParams.get("fbclid")) out.fbclid = r.searchParams.get("fbclid");
+
+        return out;
+      }
+
+      function applyUtmsToUrl(resolvedUrl, utms, forceUtmTerm) {
+        try {
+          var u = new URL(resolvedUrl);
+
+          for (var key in utms) {
+            if (!utms.hasOwnProperty(key)) continue;
+            if (!utms[key]) continue;
+            if (key === "sid" || key === "mcapi_sid") {
+              u.searchParams.set(key, utms[key]);
+              continue;
+            }
+
+            if (key === "utm_term") {
+              if (forceUtmTerm) u.searchParams.set("utm_term", utms.utm_term);
+              else if (!u.searchParams.get("utm_term")) u.searchParams.set("utm_term", utms.utm_term);
+              continue;
+            }
+
+            if (!u.searchParams.get(key)) u.searchParams.set(key, utms[key]);
+          }
+
+          return u.toString();
+        } catch (e) {
+          return resolvedUrl;
+        }
+      }
+
+      function sendEvent(payload) {
+        try {
+          if (navigator.sendBeacon) {
+            var blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
+            navigator.sendBeacon(TRACK_URL, blob);
+            return;
+          }
+        } catch (e) {}
+
+        fetch(TRACK_URL, {
+          method: "POST",
+          mode: "cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          keepalive: true
+        }).catch(function(){});
+      }
+
+      function postEvent(eventName) {
+        var sid = getOrCreateSid();
+
+        var payload = {
+          pixel_id: PIXEL_PUBLIC_KEY,
+          sid: sid,
+          event: eventName,
+          event_id: eventName + "_" + sid + "_" + Date.now(),
+          url: location.href,
+          utm: buildUtms(),
+          fbp: ensureFbp(),
+          fbc: ensureFbc()
+        };
+
+        sendEvent(payload);
+      }
+
+      function updateLinks() {
+        var utms = buildUtms();
+        var sid = utms.sid || getOrCreateSid();
+        var anchors = document.querySelectorAll("a[href]");
+        for (var i = 0; i < anchors.length; i++) {
+          var a = anchors[i];
+          var href = a.getAttribute("href") || "";
+          if (!href) continue;
+
+          var resolved = safeResolveUrl(href);
+          if (!looksLikeCheckout(resolved)) continue;
+
+          var decoratedUrl = applyUtmsToUrl(resolved, utms, true);
+          if (MCAPI_DEBUG && decoratedUrl !== resolved) {
+            console.log("SID atual:", sid);
+            console.log("Link original:", resolved);
+            console.log("Link modificado:", decoratedUrl);
+          }
+          a.href = decoratedUrl;
+        }
+      }
+
+      function init() {
+        ensureFbp();
+        if (MCAPI_DEBUG) console.log("[mcapi] SID na página (cookie mcapi_sid):", getOrCreateSid());
+        updateLinks();
+        postEvent("PageView");
+
+        var tries = 0;
+        var t = setInterval(function () {
+          tries++;
+          updateLinks();
+          if (tries >= 10) clearInterval(t);
+        }, 1000);
+
+        if (window.MutationObserver) {
+          var mo = new MutationObserver(function () { updateLinks(); });
+          mo.observe(document.documentElement, { childList: true, subtree: true });
+        }
+      }
+
+      document.addEventListener("click", function (e) {
+        var el = e.target;
+        var a = el && el.closest ? el.closest("a") : null;
+        if (!a) return;
+
+        var href = a.getAttribute("href") || "";
+        if (!href) return;
+
+        var resolved = safeResolveUrl(href);
+        if (!looksLikeCheckout(resolved)) return;
+
+        var utms = buildUtms();
+        var sidClick = utms.sid || getOrCreateSid();
+        var decoratedClick = applyUtmsToUrl(resolved, utms, true);
+        if (MCAPI_DEBUG) {
+          console.log("SID atual:", sidClick);
+          console.log("Link original:", resolved);
+          console.log("Link modificado:", decoratedClick);
+        }
+        a.href = decoratedClick;
+
+        postEvent("InitiateCheckout");
+      }, true);
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
+    })();
+    </script>
 </head>
 <body class="bg-sand text-charcoal font-sans antialiased">
 
@@ -124,7 +364,7 @@
                 </div>
             </div>
 
-            <!-- Lado Direito: Mockup Principal (Apenas a imagem transparente solta, sem caixas ou sombras artificiais) -->
+            <!-- Lado Direito: Mockup Principal -->
             <div class="lg:col-span-5 flex justify-center items-center w-full">
                 <img src="./imagem1.webp" 
                      alt="Mockup do Catálogo Prático 50 Receitas" 
@@ -135,7 +375,7 @@
         </div>
     </section>
 
-    <!-- SEÇÃO 2: DEMONSTRATIVO DO PRODUTO (ESTEIRA INFINITA E COLADA COM 6 IMAGENS) -->
+    <!-- SEÇÃO 2: DEMONSTRATIVO DO PRODUTO (ESTEIRA INFINITA E COLADA COM 7 IMAGENS) -->
     <section class="bg-white py-16 border-y border-sage-100">
         <div class="space-y-10">
             <div class="text-center space-y-3 px-4">
@@ -147,13 +387,14 @@
             <!-- Container da Esteira 100% Colada e sem Bordas -->
             <div class="relative w-full overflow-hidden bg-white py-2 border-y border-sage-50 select-none">
                 <div class="animate-marquee">
-                    <!-- Grupo 1 de Imagens (6 imagens originais) -->
+                    <!-- Grupo 1 de Imagens (7 imagens originais) -->
                     <img src="./carrossel1.webp" alt="Ficha Técnica 1" class="w-[200px] sm:w-[280px] md:w-[320px] aspect-square object-cover p-0 m-0 border-0 flex-shrink-0">
                     <img src="./carrossel2.webp" alt="Ficha Técnica 2" class="w-[200px] sm:w-[280px] md:w-[320px] aspect-square object-cover p-0 m-0 border-0 flex-shrink-0">
                     <img src="./carrossel3.webp" alt="Ficha Técnica 3" class="w-[200px] sm:w-[280px] md:w-[320px] aspect-square object-cover p-0 m-0 border-0 flex-shrink-0">
                     <img src="./carrossel4.webp" alt="Ficha Técnica 4" class="w-[200px] sm:w-[280px] md:w-[320px] aspect-square object-cover p-0 m-0 border-0 flex-shrink-0">
                     <img src="./carrossel5.webp" alt="Ficha Técnica 5" class="w-[200px] sm:w-[280px] md:w-[320px] aspect-square object-cover p-0 m-0 border-0 flex-shrink-0">
                     <img src="./carrossel6.webp" alt="Ficha Técnica 6" class="w-[200px] sm:w-[280px] md:w-[320px] aspect-square object-cover p-0 m-0 border-0 flex-shrink-0">
+                    <img src="./carrossel7.webp" alt="Ficha Técnica 7" class="w-[200px] sm:w-[280px] md:w-[320px] aspect-square object-cover p-0 m-0 border-0 flex-shrink-0">
                     
                     <!-- Grupo 2 de Imagens (Duplicata idêntica para o loop infinito ser perfeito e invisível) -->
                     <img src="./carrossel1.webp" alt="Ficha Técnica 1" class="w-[200px] sm:w-[280px] md:w-[320px] aspect-square object-cover p-0 m-0 border-0 flex-shrink-0">
@@ -162,6 +403,7 @@
                     <img src="./carrossel4.webp" alt="Ficha Técnica 4" class="w-[200px] sm:w-[280px] md:w-[320px] aspect-square object-cover p-0 m-0 border-0 flex-shrink-0">
                     <img src="./carrossel5.webp" alt="Ficha Técnica 5" class="w-[200px] sm:w-[280px] md:w-[320px] aspect-square object-cover p-0 m-0 border-0 flex-shrink-0">
                     <img src="./carrossel6.webp" alt="Ficha Técnica 6" class="w-[200px] sm:w-[280px] md:w-[320px] aspect-square object-cover p-0 m-0 border-0 flex-shrink-0">
+                    <img src="./carrossel7.webp" alt="Ficha Técnica 7" class="w-[200px] sm:w-[280px] md:w-[320px] aspect-square object-cover p-0 m-0 border-0 flex-shrink-0">
                 </div>
             </div>
         </div>
@@ -231,7 +473,7 @@
             
             <div class="bg-white p-8 md:p-10 rounded-3xl custom-shadow border border-sage-100 text-left space-y-6">
                 <p class="text-base md:text-lg text-gray-600 leading-relaxed font-light">
-                    Você vai receber um arquivo digital em PDF contendo as <strong>50 fichas técnicas com os ingredientes exatos</strong>, modo de preparo e indicações de uso para cada sabonete.
+                    Você vai receber um arquivo digital em PDF contendo as <strong>50 fichas técnicas com os ingredientes exatos</strong>, modo de preparo and indicações de uso para cada sabonete.
                 </p>
                 <div class="border-t border-sage-100 pt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                     <div class="p-4 bg-sand/50 rounded-2xl">
@@ -372,7 +614,7 @@
                 </div>
 
                 <div class="pt-8 space-y-3">
-                    <a href="https://pay.kiwify.com.br/LINK_BASICO" target="_blank" class="block w-full bg-sage-100 hover:bg-sage-200 text-sage-700 text-center py-3.5 rounded-full font-bold text-sm transition-all uppercase tracking-wider">
+                    <a href="https://ceramica.mycartpanda.com/checkout/211499804:1" target="_blank" class="block w-full bg-sage-100 hover:bg-sage-200 text-sage-700 text-center py-3.5 rounded-full font-bold text-sm transition-all uppercase tracking-wider">
                         ADQUIRIR PLANO BÁSICO
                     </a>
                     <p class="text-[10px] text-gray-400 text-center">🔒 Compra Segura e Entrega Instantânea</p>
@@ -399,7 +641,7 @@
                         <p class="text-xs text-gray-500">ou em até 3x de R$ 5,95 no cartão</p>
                     </div>
 
-                    <!-- Espaço para o Mockup do Plano Premium (Apenas o mockup transparente, sem caixas ou fundos de contraste) -->
+                    <!-- Espaço para o Mockup do Plano Premium -->
                     <div class="flex justify-center items-center py-2 w-full">
                         <img src="./imagem7.webp" 
                              alt="Mockup do Combo do Plano Premium completo" 
@@ -432,7 +674,7 @@
                 </div>
 
                 <div class="pt-8 space-y-3">
-                    <a href="https://pay.kiwify.com.br/LINK_PREMIUM" target="_blank" class="block w-full bg-clay hover:bg-opacity-95 text-white text-center py-4 rounded-full font-bold text-base transition-all transform hover:-translate-y-0.5 shadow-lg uppercase tracking-wider">
+                    <a href="https://ceramica.mycartpanda.com/checkout/211499807:1" target="_blank" class="block w-full bg-clay hover:bg-opacity-95 text-white text-center py-4 rounded-full font-bold text-base transition-all transform hover:-translate-y-0.5 shadow-lg uppercase tracking-wider">
                         QUERO O PLANO COMPLETO
                     </a>
                     <p class="text-[10px] text-gray-400 text-center">🔒 Seus dados criptografados e compra 100% segura.</p>
