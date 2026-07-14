@@ -40,9 +40,6 @@
         .custom-shadow {
             box-shadow: 0 10px 30px -10px rgba(95, 113, 97, 0.15);
         }
-        .image-overlay {
-            background: linear-gradient(to top, rgba(45, 49, 46, 0.8) 0%, rgba(45, 49, 46, 0) 100%);
-        }
     </style>
 </head>
 <body class="bg-sand text-charcoal font-sans antialiased">
@@ -78,14 +75,12 @@
                 Aprenda a fazer <span class="text-clay italic">20 sabonetes</span> dermatológicos naturais na cozinha de sua casa
             </h1>
             
-            <!-- 3. IMAGEM ESTRATÉGICA (Exatamente entre Headline e Subheadline!) -->
-            <div class="relative rounded-3xl overflow-hidden h-64 md:h-[400px] w-full bg-sage-100 shadow-inner custom-shadow">
+            <!-- 3. IMAGEM ESTRATÉGICA (Sem degradê escuro e sem limitação de altura!) -->
+            <div class="relative w-full custom-shadow">
                 <img src="imagem1.webp" 
                      alt="Sabonetes dermatológicos naturais com ativos fitoterápicos" 
-                     class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                     onerror="this.src='https://placehold.co/800x400/E6ECE6/3F4B41?text=Sabonetes+Dermatologicos+imagem1.webp'">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                <span class="absolute bottom-4 left-4 bg-white/95 text-sage-700 text-[10px] md:text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                     class="w-full h-auto rounded-3xl block shadow-md transition-transform duration-500 hover:scale-[1.01]">
+                <span class="absolute bottom-4 left-4 bg-white/95 text-sage-700 text-[10px] md:text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-md z-10">
                     ✨ As 20 Fórmulas do Curso
                 </span>
             </div>
@@ -181,7 +176,7 @@
         </div>
     </section>
 
-    <!-- SEÇÃO 3: FOTOS REAIS DAS CAUSAS (EMPATIA E PROVA DE DOR SEM ANTES E DEPOIS) -->
+    <!-- SEÇÃO 3: FOTOS REAIS DAS CAUSAS (EMPATIA E PROVA DE DOR SEM ANTES E DEPOIS CORTADOS) -->
     <section class="py-16 px-4 max-w-7xl mx-auto">
         <div class="text-center space-y-3 mb-10">
             <h2 class="font-serif text-3xl md:text-4xl font-bold text-sage-700">Soluções reais para as maiores dores da sua pele</h2>
@@ -202,71 +197,73 @@
             </div>
         </div>
 
+        <!-- Cards das Causas com imagens completas (sem corte vertical e sem degradê preto) -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Card 1: Acne (IMAGEM ESTRATÉGICA 2: ACNE REAL -> imagem2.webp) -->
-            <div class="bg-white rounded-3xl overflow-hidden custom-shadow border border-sage-50">
-                <div class="h-64 bg-slate-200 relative flex items-center justify-center overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+            
+            <!-- Card 1: Acne (Imagem sem corte, proporção original) -->
+            <div class="bg-white rounded-3xl overflow-hidden custom-shadow border border-sage-50 flex flex-col justify-between">
+                <div class="p-4 pb-0">
                     <img src="imagem2.webp" 
                          alt="Pele real mostrando textura natural e imperfeições de acne" 
-                         class="w-full h-full object-cover absolute inset-0"
-                         onerror="this.src='https://placehold.co/600x400/F2D2D2/3F4B41?text=Acne+Adulto+imagem2.webp'">
-                    <div class="absolute bottom-4 left-4 z-20 text-white">
-                        <span class="text-[10px] uppercase tracking-widest bg-sage-500 px-2.5 py-1 rounded-full font-bold">Quadro Clínico</span>
-                        <h4 class="font-serif text-lg font-bold mt-1">Acne Adulta e Cravos</h4>
-                    </div>
+                         class="w-full h-auto rounded-2xl block shadow-sm">
                 </div>
-                <div class="p-6 space-y-3">
-                    <p class="text-sm text-gray-600 font-light leading-relaxed">
-                        Desequilíbrios hormonais, estresse e maquiagem excessiva geram cravos e espinhas doloridas que demoram a secar.
-                    </p>
-                    <p class="text-sm font-semibold text-sage-700 flex items-center">
+                <div class="p-6 space-y-3 flex-1 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="text-[10px] uppercase tracking-widest bg-sage-500 text-white px-2.5 py-1 rounded-full font-bold">Quadro Clínico</span>
+                            <h4 class="font-serif text-lg font-bold text-sage-700">Acne Adulta e Cravos</h4>
+                        </div>
+                        <p class="text-sm text-gray-600 font-light leading-relaxed">
+                            Desequilíbrios hormonais, estresse e maquiagem excessiva geram cravos e espinhas doloridas que demoram a secar.
+                        </p>
+                    </div>
+                    <p class="text-sm font-semibold text-sage-700 flex items-center pt-3 border-t border-sage-50">
                         🌿 Solução: Barras purificantes anti-inflamatórias e reguladoras de sebo.
                     </p>
                 </div>
             </div>
 
-            <!-- Card 2: Manchas/Melasma (IMAGEM ESTRATÉGICA 3: HIPERPIGMENTAÇÃO -> imagem3.webp) -->
-            <div class="bg-white rounded-3xl overflow-hidden custom-shadow border border-sage-50">
-                <div class="h-64 bg-slate-200 relative flex items-center justify-center overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+            <!-- Card 2: Manchas/Melasma (Imagem sem corte, proporção original) -->
+            <div class="bg-white rounded-3xl overflow-hidden custom-shadow border border-sage-50 flex flex-col justify-between">
+                <div class="p-4 pb-0">
                     <img src="imagem3.webp" 
-                         alt="Rosto sob o sol evidenciando marcas solares e melasma" 
-                         class="w-full h-full object-cover absolute inset-0"
-                         onerror="this.src='https://placehold.co/600x400/E8DFD8/3F4B41?text=Melasma+e+Marcas+imagem3.webp'">
-                    <div class="absolute bottom-4 left-4 z-20 text-white">
-                        <span class="text-[10px] uppercase tracking-widest bg-sage-500 px-2.5 py-1 rounded-full font-bold">Quadro Clínico</span>
-                        <h4 class="font-serif text-lg font-bold mt-1">Marcas e Melasma</h4>
-                    </div>
+                         alt="Pele real mostrando manchas escuras por atrito" 
+                         class="w-full h-auto rounded-2xl block shadow-sm">
                 </div>
-                <div class="p-6 space-y-3">
-                    <p class="text-sm text-gray-600 font-light leading-relaxed">
-                        Marcas escuras decorrentes de sol, acne antiga ou atrito constante em áreas sensíveis como axilas e virilhas.
-                    </p>
-                    <p class="text-sm font-semibold text-sage-700 flex items-center">
+                <div class="p-6 space-y-3 flex-1 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="text-[10px] uppercase tracking-widest bg-sage-500 text-white px-2.5 py-1 rounded-full font-bold">Quadro Clínico</span>
+                            <h4 class="font-serif text-lg font-bold text-sage-700">Marcas e Melasma</h4>
+                        </div>
+                        <p class="text-sm text-gray-600 font-light leading-relaxed">
+                            Marcas escuras decorrentes de sol, acne antiga ou atrito constante em áreas sensíveis como axilas e virilhas.
+                        </p>
+                    </div>
+                    <p class="text-sm font-semibold text-sage-700 flex items-center pt-3 border-t border-sage-50">
                         🌿 Solução: Fórmulas clareadoras seguras de ativação celular diária.
                     </p>
                 </div>
             </div>
 
-            <!-- Card 3: Rosácea (IMAGEM ESTRATÉGICA 4: PELE REATIVA -> imagem4.webp) -->
-            <div class="bg-white rounded-3xl overflow-hidden custom-shadow border border-sage-50">
-                <div class="h-64 bg-slate-200 relative flex items-center justify-center overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+            <!-- Card 3: Rosácea (Imagem sem corte, proporção original) -->
+            <div class="bg-white rounded-3xl overflow-hidden custom-shadow border border-sage-50 flex flex-col justify-between">
+                <div class="p-4 pb-0">
                     <img src="imagem4.webp" 
-                         alt="Mulher tocando suavemente o rosto sensibilizado" 
-                         class="w-full h-full object-cover absolute inset-0"
-                         onerror="this.src='https://placehold.co/600x400/F4ECE6/3F4B41?text=Pele+Sensivel+imagem4.webp'">
-                    <div class="absolute bottom-4 left-4 z-20 text-white">
-                        <span class="text-[10px] uppercase tracking-widest bg-sage-500 px-2.5 py-1 rounded-full font-bold">Quadro Clínico</span>
-                        <h4 class="font-serif text-lg font-bold mt-1">Rosácea e Alergias</h4>
-                    </div>
+                         alt="Pele reativa sensibilizada" 
+                         class="w-full h-auto rounded-2xl block shadow-sm">
                 </div>
-                <div class="p-6 space-y-3">
-                    <p class="text-sm text-gray-600 font-light leading-relaxed">
-                        Pele reativa à poluição, vento ou estresse, que arde ao usar cosméticos comuns e sofre com coceiras e descamação.
-                    </p>
-                    <p class="text-sm font-semibold text-sage-700 flex items-center">
+                <div class="p-6 space-y-3 flex-1 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="text-[10px] uppercase tracking-widest bg-sage-500 text-white px-2.5 py-1 rounded-full font-bold">Quadro Clínico</span>
+                            <h4 class="font-serif text-lg font-bold text-sage-700">Rosácea e Alergias</h4>
+                        </div>
+                        <p class="text-sm text-gray-600 font-light leading-relaxed">
+                            Pele reativa à poluição, vento ou estresse, que arde ao usar cosméticos comuns e sofre com coceiras e descamação.
+                        </p>
+                    </div>
+                    <p class="text-sm font-semibold text-sage-700 flex items-center pt-3 border-t border-sage-50">
                         🌿 Solução: Escudos de alívio que reestruturam os lipídios naturais da derme.
                     </p>
                 </div>
@@ -473,15 +470,14 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Bonus 1: Rótulos Minimalistas (IMAGEM ESTRATÉGICA 5: RÓTULOS MOCKUP -> imagem5.webp) -->
-            <div class="bg-white rounded-3xl overflow-hidden custom-shadow border border-sage-100 flex flex-col">
-                <div class="h-48 w-full bg-sage-50 relative overflow-hidden">
+            
+            <!-- Bonus 1: Rótulos Minimalistas (Renderizado por completo com rounded corners, sem corte ou filtro preto) -->
+            <div class="bg-white rounded-3xl overflow-hidden custom-shadow border border-sage-100 flex flex-col justify-between">
+                <div class="p-4 pb-0 relative">
                     <img src="imagem5.webp" 
                          alt="Design de rótulos minimalistas para cosméticos naturais" 
-                         class="w-full h-full object-cover"
-                         onerror="this.src='https://placehold.co/600x300/E6ECE6/3F4B41?text=Rotulos+Minimalistas+imagem5.webp'">
-                    <div class="absolute inset-0 bg-black/20"></div>
-                    <span class="absolute top-4 left-4 bg-clay text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Grátis</span>
+                         class="w-full h-auto rounded-2xl block shadow-sm">
+                    <span class="absolute top-6 left-6 bg-clay text-white text-xs font-bold px-3 py-1 rounded-full uppercase shadow-sm">Grátis</span>
                 </div>
                 <div class="p-6 space-y-3 flex-1 flex flex-col justify-between">
                     <div>
@@ -493,15 +489,13 @@
                 </div>
             </div>
 
-            <!-- Bonus 2: Embalagens Ecológicas (IMAGEM ESTRATÉGICA 6: EMBALAGENS -> imagem6.webp) -->
-            <div class="bg-white rounded-3xl overflow-hidden custom-shadow border border-sage-100 flex flex-col">
-                <div class="h-48 w-full bg-sage-50 relative overflow-hidden">
+            <!-- Bonus 2: Embalagens Ecológicas (Renderizado por completo com rounded corners, sem corte ou filtro preto) -->
+            <div class="bg-white rounded-3xl overflow-hidden custom-shadow border border-sage-100 flex flex-col justify-between">
+                <div class="p-4 pb-0 relative">
                     <img src="imagem6.webp" 
                          alt="Sabonetes embalados de forma artesanal e ecológica com juta" 
-                         class="w-full h-full object-cover"
-                         onerror="this.src='https://placehold.co/600x300/E8DFD8/3F4B41?text=Embalagens+Ecologicas+imagem6.webp'">
-                    <div class="absolute inset-0 bg-black/20"></div>
-                    <span class="absolute top-4 left-4 bg-clay text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Grátis</span>
+                         class="w-full h-auto rounded-2xl block shadow-sm">
+                    <span class="absolute top-6 left-6 bg-clay text-white text-xs font-bold px-3 py-1 rounded-full uppercase shadow-sm">Grátis</span>
                 </div>
                 <div class="p-6 space-y-3 flex-1 flex flex-col justify-between">
                     <div>
@@ -512,6 +506,7 @@
                     </div>
                 </div>
             </div>
+            
         </div>
     </section>
 
@@ -595,13 +590,11 @@
                         <p class="text-xs text-gray-500 leading-relaxed">Vídeos práticos, calculadora inteligente e todos os bônus exclusivos inclusos.</p>
                     </div>
 
-                    <!-- Espaço para o Mockup do Plano Premium -->
-                    <div class="relative rounded-2xl overflow-hidden h-40 w-full bg-sand border border-sage-100 shadow-sm flex items-center justify-center">
+                    <!-- Espaço para o Mockup do Plano Premium (Totalmente visível, sem cortes e sem degradê cinza) -->
+                    <div class="p-2">
                         <img src="imagem7.webp" 
                              alt="Mockup do Combo do Plano Premium completo" 
-                             class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                             onerror="this.src='https://placehold.co/400x200/FAF6F0/D4A373?text=Mockup+Combo+Premium+imagem7.webp'">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                             class="w-full h-auto rounded-2xl block shadow-sm hover:scale-[1.01] transition-transform duration-300">
                     </div>
 
                     <div class="py-4 border-y border-sage-100 space-y-1">
@@ -662,7 +655,7 @@
             <div class="text-4xl shrink-0">🛡️</div>
             <div class="space-y-0.5">
                 <h4 class="font-bold text-sage-700 text-sm">Garantia Incondicional de 7 dias</h4>
-                <p class="text-xs text-gray-500 leading-relaxed">Acesse o material, receitas e bônus de qualquer um dos planos. Se não ficar totalmente satisfeita, devolvemos seu investimento integral na hora.</p>
+                <p class="text-xs text-gray-500 leading-relaxed">Acesse o material, receitas e bônus de qualquer um dos planos. Se não ficar totalmente satisfeita, devolvemos seu investmento integral na hora.</p>
             </div>
         </div>
     </section>
@@ -685,7 +678,6 @@
         </div>
     </footer>
 
-    <!-- Scripts de Interatividade Simples -->
     <script>
         // Função para alternar entre as abas de "Saúde" e "Renda"
         function toggleCamino(aba) {
